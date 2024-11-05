@@ -1,0 +1,16 @@
+{
+    "manifest_version": 3,
+    "name": "Systemet APK",
+    "description": "Gets APK for systemet products",
+    "version": "1.0",
+    "content_scripts": [
+      {
+        "js": [
+          "content-script.js"
+        ],
+        "matches": [
+          "https://www.systembolaget.se/sortiment*"
+        ]
+      }
+    ]
+  }
