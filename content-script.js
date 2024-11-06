@@ -24,7 +24,7 @@ const formatProductDetails = (volumeElement, alcoholElement, priceElement) => {
     const flaskVolume = parseFloat(volumeRegexMatch[3]);
     formattedVolume = flaskCounte * flaskVolume;
   } else {
-    formattedVolume = parseFloat(volumeRegexMatch[1]);
+    formattedVolume = parseFloat(volumeRegexMatch[1].replace(" ", ""));
   }
 
   const formattedAlcoholPercentage = parseFloat(
