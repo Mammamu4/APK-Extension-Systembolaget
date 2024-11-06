@@ -9,13 +9,24 @@ const formatProductDetails = (volumeElement, alcoholElement, priceElement) => {
   if (!volumeElement || !alcoholElement || !priceElement) {
     return null; // Return null if any element is missing
   }
-  
-  
-  const formattedVolume = parseFloat(
-    volumeElement.textContent.split(" ml ")[0].replace(" ", "")
-  ); //String.prototype.replace() is used to account for volumes containing white space like 3 000 ml
-  
-  
+
+  const volumeRegexMatch = volumeElement.textContent.match(
+    /(\d{1,3}(?: \d{3})?)\s*ml|(\d+)\s*flaskor\s*à\s*(\d+)\s*ml/
+  );
+  if (!volumeRegexMatch) {
+    console.log("Volume format not as expected.");
+    return null;
+  }
+
+  let formattedVolume = 0;
+  if (volumeRegexMatch[3] !== undefined) {
+    const flaskCounte = parseFloat(volumeRegexMatch[2]);
+    const flaskVolume = parseFloat(volumeRegexMatch[3]);
+    formattedVolume = flaskCounte * flaskVolume;
+  } else {
+    formattedVolume = parseFloat(volumeRegexMatch[1]);
+  }
+
   const formattedAlcoholPercentage = parseFloat(
     alcoholElement.textContent.split(" % ")[0].replace(",", ".")
   );
@@ -32,7 +43,9 @@ const formatProductDetails = (volumeElement, alcoholElement, priceElement) => {
 
   // Remove spaces from the matched integer part before parsing it as a float
   const integerPart = priceRegexMatch[1].replace(/\s/g, ""); // Remove any spaces in the integer part
-  const formattedPrice = parseFloat(`${integerPart}.${priceRegexMatch[2] || "00"}`); // Default cents to '00' if not present
+  const formattedPrice = parseFloat(
+    `${integerPart}.${priceRegexMatch[2] || "00"}`
+  ); // Default cents to '00' if not present
   return { formattedVolume, formattedAlcoholPercentage, formattedPrice };
 };
 
