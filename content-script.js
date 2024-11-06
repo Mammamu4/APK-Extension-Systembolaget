@@ -17,13 +17,19 @@ const formatProductDetails = (volumeElement, alcoholElement, priceElement) => {
     alcoholElement.textContent.split(" % ")[0].replace(",", ".")
   );
 
-  const regexMatch = priceElement.textContent.match(/(\d+):?(\d+)?/); // Matches one or more digits, optionally followed by a colon and another set of digits (exemple: 15:90).
+  const regexMatch = priceElement.textContent.match(
+    /(\d{1,3}(?:\s?\d{3})*):?(\d+)?/
+  );
+  // Matches one to three digits, optionally followed by a space and more groups of three digits (for thousands).
+
   if (!regexMatch) {
     console.log("Price format not as expected.");
     return null; // Return null if price format is invalid
   }
 
-  const formattedPrice = parseFloat(`${regexMatch[1]}.${regexMatch[2]}`);
+  // Remove spaces from the matched integer part before parsing it as a float
+  const integerPart = regexMatch[1].replace(/\s/g, ""); // Remove any spaces in the integer part
+  const formattedPrice = parseFloat(`${integerPart}.${regexMatch[2] || "00"}`); // Default cents to '00' if not present
   return { formattedVolume, formattedAlcoholPercentage, formattedPrice };
 };
 
@@ -127,6 +133,7 @@ const mutationObserver = new MutationObserver((entries, observer) => {
         alcoholPercentage,
         price
       );
+
       if (productDetails) {
         const { formattedVolume, formattedAlcoholPercentage, formattedPrice } =
           productDetails;
@@ -135,12 +142,14 @@ const mutationObserver = new MutationObserver((entries, observer) => {
           formattedAlcoholPercentage,
           formattedPrice
         );
-
+        console.log(formattedVolume);
+        console.log(formattedAlcoholPercentage);
+        console.log(formattedPrice);
         const productDiv = product.querySelector("div.css-1n1rld4.e1ixmn8z0");
         appendAPKToProduct(productDiv, apk);
 
         // Disconnect the observer as all necessary information has been processed
-        //observer.disconnect();
+        // observer.disconnect();
       }
     });
   } else {
