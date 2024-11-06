@@ -9,27 +9,30 @@ const formatProductDetails = (volumeElement, alcoholElement, priceElement) => {
   if (!volumeElement || !alcoholElement || !priceElement) {
     return null; // Return null if any element is missing
   }
-
+  
+  
   const formattedVolume = parseFloat(
     volumeElement.textContent.split(" ml ")[0].replace(" ", "")
   ); //String.prototype.replace() is used to account for volumes containing white space like 3 000 ml
+  
+  
   const formattedAlcoholPercentage = parseFloat(
     alcoholElement.textContent.split(" % ")[0].replace(",", ".")
   );
 
-  const regexMatch = priceElement.textContent.match(
+  const priceRegexMatch = priceElement.textContent.match(
     /(\d{1,3}(?:\s?\d{3})*):?(\d+)?/
   );
   // Matches one to three digits, optionally followed by a space and more groups of three digits (for thousands).
 
-  if (!regexMatch) {
+  if (!priceRegexMatch) {
     console.log("Price format not as expected.");
     return null; // Return null if price format is invalid
   }
 
   // Remove spaces from the matched integer part before parsing it as a float
-  const integerPart = regexMatch[1].replace(/\s/g, ""); // Remove any spaces in the integer part
-  const formattedPrice = parseFloat(`${integerPart}.${regexMatch[2] || "00"}`); // Default cents to '00' if not present
+  const integerPart = priceRegexMatch[1].replace(/\s/g, ""); // Remove any spaces in the integer part
+  const formattedPrice = parseFloat(`${integerPart}.${priceRegexMatch[2] || "00"}`); // Default cents to '00' if not present
   return { formattedVolume, formattedAlcoholPercentage, formattedPrice };
 };
 
