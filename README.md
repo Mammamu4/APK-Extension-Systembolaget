@@ -1,4 +1,3 @@
-
 # APK for Systembolaget.se
 
 A web extension that calculates Alcohol Per Krona (APK) on Systembolaget.se, helping users instantly find the best value for alcohol purchases
@@ -19,5 +18,3 @@ A web extension that calculates Alcohol Per Krona (APK) on Systembolaget.se, hel
 - APK Sorting
 - Best APK
 - Worst APK
-![Logo](https://seriewikin.serieframjandet.se/images/3/32/Razor.jpg)
-
