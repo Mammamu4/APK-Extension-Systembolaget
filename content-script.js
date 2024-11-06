@@ -46,8 +46,16 @@ const calculateAPK = (volume, alcoholPercentage, price) => {
  * @param {number} apk - The APK value that determines the background color.
  */
 const appendAPKToProduct = (productDiv, apk) => {
-  const apkContainer = document.createElement("div");
-  apkContainer.className = "apk-container";
+  // Check if the container already exists
+  let apkContainer = productDiv.querySelector(".apk-container");
+
+  // If apkCotnainer doesn't exists, create a new one
+  if (!apkContainer) {
+    apkContainer = document.createElement("div");
+    apkContainer.className = "apk-container";
+    productDiv.appendChild(apkContainer);
+  }
+
   apkContainer.textContent = `APK: ${apk}`;
 
   // Calculate color based on APK value
@@ -57,9 +65,6 @@ const appendAPKToProduct = (productDiv, apk) => {
   apkContainer.style.textAlign = "center";
   apkContainer.style.fontWeight = "bold";
   apkContainer.style.marginTop = "10px";
-
-  // Append the APK container to the product div
-  productDiv.appendChild(apkContainer);
 };
 
 /**
@@ -135,7 +140,7 @@ const mutationObserver = new MutationObserver((entries, observer) => {
         appendAPKToProduct(productDiv, apk);
 
         // Disconnect the observer as all necessary information has been processed
-        observer.disconnect();
+        //observer.disconnect();
       }
     });
   } else {
