@@ -79,11 +79,12 @@ const appendAPKToProduct = (productDiv, apk) => {
   }
 
   apkContainer.textContent = `APK: ${apk}`;
+  apkContainer.setAttribute("apk-value", apk);
 
   // Calculate color based on APK value
   const color = calculateColor(apk);
   apkContainer.style.backgroundColor = color;
-  apkContainer.style.borderRadius = "5px";
+  apkContainer.style.borderRadius = "10px";
   apkContainer.style.textAlign = "center";
   apkContainer.style.fontWeight = "bold";
   apkContainer.style.marginTop = "10px";
@@ -158,9 +159,9 @@ const mutationObserver = new MutationObserver((entries, observer) => {
           formattedAlcoholPercentage,
           formattedPrice
         );
-        console.log(formattedVolume);
-        console.log(formattedAlcoholPercentage);
-        console.log(formattedPrice);
+        // console.log(formattedVolume);
+        // console.log(formattedAlcoholPercentage);
+        // console.log(formattedPrice);
         const productDiv = product.querySelector("div.css-1n1rld4.e1ixmn8z0");
         appendAPKToProduct(productDiv, apk);
 
@@ -176,3 +177,37 @@ const mutationObserver = new MutationObserver((entries, observer) => {
 // Start observing the body for child additions and subtree changes
 const body = document.getElementsByTagName("body")[0];
 mutationObserver.observe(body, { childList: true, subtree: true }); // The 'childList' option combined with 'subtree' observes all child elements and their descendants.
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "sortProducts") {
+    const gridElement = document.querySelector("div.css-1fgrh1r.e1ixmn8z0");
+    if (gridElement) {
+      const firstDiv = gridElement.querySelector("div.css-131707k.e1ixmn8z0");
+      console.log(firstDiv);
+      if (firstDiv) {
+        firstDiv.remove();
+      }
+      const products = Array.from(gridElement.children);
+      products.forEach((product) => {
+        console.log(
+          product.querySelector("div.apk-container").getAttribute("apk-value")
+        );
+      });
+
+      products.sort((a, b) => {
+        const apkA = parseFloat(
+          a.querySelector("div.apk-container").getAttribute("apk-value")
+        );
+        const apkB = parseFloat(
+          b.querySelector("div.apk-container").getAttribute("apk-value")
+        );
+        return apkB - apkA;
+      });
+      console.log(products);
+      gridElement.innerHTML = "";
+      products.forEach((product) => gridElement.append(product)); // Re-append sorted products
+    } else {
+      console.log("Grid element not found.");
+    }
+  }
+});

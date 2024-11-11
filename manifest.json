@@ -1,29 +1,26 @@
 {
-    "manifest_version": 3,
-    "name": "Systemet APK",
-    "description": "Gets APK for systemet products",
-    "version": "1.0",
-    "icons": {
-        "16": "images/razor-16.png",
-        "32": "images/razor-32.png",
-        "48": "images/razor-48.png",
-        "128": "images/razor-128.png"
-    },
-    
-    "action": {
-        "default_popup": "popup.html"
-    },
-    "content_scripts": [
-      {
-        "js": [
-          "content-script.js"
-        ],
-        "matches": [
-          "https://www.systembolaget.se/sortiment*"
-        ]
-      }
-    ],
-    "permissions": [
-    "activeTab"
-  ]
+  "manifest_version": 3,
+  "name": "Systemet APK",
+  "description": "Gets APK for systemet products",
+  "version": "1.0",
+  "icons": {
+    "16": "images/razor-16.png",
+    "32": "images/razor-32.png",
+    "48": "images/razor-48.png",
+    "128": "images/razor-128.png"
+  },
+
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "js": ["content-script.js"],
+      "matches": ["https://www.systembolaget.se/sortiment*"]
+    }
+  ],
+  "permissions": ["activeTab", "scripting"],
+  "background": {
+    "service_worker": "background.js"
   }
+}

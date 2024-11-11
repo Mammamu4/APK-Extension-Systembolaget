@@ -1,3 +1,17 @@
-.apk-container{
-    background-color: red;
+body {
+  padding: 10px;
+}
+div {
+}
+button {
+  background-color: #04aa6d;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 16px;
 }
