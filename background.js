@@ -5,3 +5,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
   }
 });
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "toggleAutoSort") {
+    chrome.storage.local.get(["autoSort"], (result) => {
+      let newValue = !result.autoSort;
+      chrome.storage.local.set({ autoSort: newValue });
+
+      sendResponse({ success: true });
+    });
+    return true;
+  }
+});

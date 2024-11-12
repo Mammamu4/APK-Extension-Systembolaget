@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Systemet APK",
   "description": "Gets APK for systemet products",
-  "version": "1.0",
+  "version": "1.1",
   "icons": {
     "16": "images/razor-16.png",
     "32": "images/razor-32.png",
@@ -15,11 +15,15 @@
   },
   "content_scripts": [
     {
-      "js": ["content-script.js"],
+      "js": ["content-script.js", "utils/formatProductDetails.js"],
       "matches": ["https://www.systembolaget.se/sortiment*"]
+    },
+    {
+      "js": ["product-script.js", "utils/formatProductDetails.js"],
+      "matches": ["https://www.systembolaget.se/produkt*"]
     }
   ],
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "storage"],
   "background": {
     "service_worker": "background.js"
   }

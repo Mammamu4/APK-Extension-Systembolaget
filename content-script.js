@@ -1,136 +1,6 @@
-/**
- * Formats the volume, alcohol percentage, and price from their respective elements.
- * @param {HTMLElement} volumeElement - The element containing the volume.
- * @param {HTMLElement} alcoholElement - The element containing the alcohol percentage.
- * @param {HTMLElement} priceElement - The element containing the price.
- * @returns {Object|null} - An object containing formatted values or null if any element is missing.
- */
-const formatProductDetails = (volumeElement, alcoholElement, priceElement) => {
-  if (!volumeElement || !alcoholElement || !priceElement) {
-    return null; // Return null if any element is missing
-  }
-
-  const volumeRegexMatch = volumeElement.textContent.match(
-    /(\d{1,3}(?: \d{3})?)\s*ml|(\d+)\s*flaskor\s*à\s*(\d+)\s*ml/
-  );
-  if (!volumeRegexMatch) {
-    console.log("Volume format not as expected.");
-    return null;
-  }
-
-  let formattedVolume = 0;
-  if (volumeRegexMatch[3] !== undefined) {
-    const flaskCounte = parseFloat(volumeRegexMatch[2]);
-    const flaskVolume = parseFloat(volumeRegexMatch[3]);
-    formattedVolume = flaskCounte * flaskVolume;
-  } else {
-    formattedVolume = parseFloat(volumeRegexMatch[1].replace(" ", ""));
-  }
-
-  const formattedAlcoholPercentage = parseFloat(
-    alcoholElement.textContent.split(" % ")[0].replace(",", ".")
-  );
-
-  const priceRegexMatch = priceElement.textContent.match(
-    /(\d{1,3}(?:\s?\d{3})*):?(\d+)?/
-  );
-  // Matches one to three digits, optionally followed by a space and more groups of three digits (for thousands).
-
-  if (!priceRegexMatch) {
-    console.log("Price format not as expected.");
-    return null; // Return null if price format is invalid
-  }
-
-  // Remove spaces from the matched integer part before parsing it as a float
-  const integerPart = priceRegexMatch[1].replace(/\s/g, ""); // Remove any spaces in the integer part
-  const formattedPrice = parseFloat(
-    `${integerPart}.${priceRegexMatch[2] || "00"}`
-  ); // Default cents to '00' if not present
-  return { formattedVolume, formattedAlcoholPercentage, formattedPrice };
-};
-
-/**
- * Calculates the APK (Alcohol Per Krona(SEK)) based on volume, alcohol percentage, and price.
- * @param {number} volume - The volume of the product.
- * @param {number} alcoholPercentage - The alcohol percentage of the product.
- * @param {number} price - The price of the product.
- * @returns {number} - The calculated APK value.
- */
-const calculateAPK = (volume, alcoholPercentage, price) => {
-  return Number(((alcoholPercentage / 100) * volume) / price).toFixed(2);
-};
-
-/**
- * Appends a div element displaying the APK value to a product container with a dynamic background color.
- * The color transitions from red to green, passing through yellow and orange, based on the APK value.
- *
- * @param {HTMLElement} productDiv - The container div of the product where the APK will be displayed.
- * @param {number} apk - The APK value that determines the background color.
- */
-const appendAPKToProduct = (productDiv, apk) => {
-  // Check if the container already exists
-  let apkContainer = productDiv.querySelector(".apk-container");
-
-  // If apkCotnainer doesn't exists, create a new one
-  if (!apkContainer) {
-    apkContainer = document.createElement("div");
-    apkContainer.className = "apk-container";
-    productDiv.appendChild(apkContainer);
-  }
-
-  apkContainer.textContent = `APK: ${apk}`;
-  apkContainer.setAttribute("apk-value", apk);
-
-  // Calculate color based on APK value
-  const color = calculateColor(apk);
-  apkContainer.style.backgroundColor = color;
-  apkContainer.style.borderRadius = "10px";
-  apkContainer.style.textAlign = "center";
-  apkContainer.style.fontWeight = "bold";
-  apkContainer.style.marginTop = "10px";
-};
-
-/**
- * Calculates the background color for the APK value.
- * The color is determined based on the APK value, transitioning smoothly from:
- * - Red for APK values <= 0.5,
- * - Orange for values between 0.5 and 0.8,
- * - Yellow for values between 0.8 and 1.5,
- * - Green for APK values between 1.5 and 2.2.
- * Values beyond 2.2 remain green.
- *
- * @param {number} apkValue - The APK value that determines the color.
- * @returns {string} - The computed RGB color value as a string.
- */
-const calculateColor = (apkValue) => {
-  // Ensure the value is within the expected range (0 to 2.3)
-  value = Math.min(Math.max(apkValue, 0), 2.3);
-
-  // Normalize the value to a range of 0 to 1
-  const ratio = apkValue / 2.3;
-
-  let red, green, blue;
-
-  if (ratio <= 0.333) {
-    // Red to Orange
-    red = 255;
-    green = Math.round(165 * ratio); // Increase green
-    blue = 0;
-  } else if (ratio <= 0.666) {
-    // Orange to Yellow
-    red = Math.round(255 - 90 * (ratio - 0.333) * 3); // Decrease red to yellow
-    green = 165 + Math.round(90 * (ratio - 0.333) * 3); // Increase green
-    blue = 0;
-  } else {
-    // Yellow to Green
-    red = Math.round(255 - 255 * (ratio - 0.666) * 3); // Decrease red
-    green = Math.round(255); // Keep green at maximum
-    blue = 0; // Keep blue at 0
-  }
-
-  return `rgb(${red}, ${green}, ${blue})`;
-};
-
+let isSortingNeeded = false;
+let lastSortTime = 0;
+const sortDelay = 50;
 /**
  * A MutationObserver observes DOM mutations and processes product information when new elements are added.
  * This is necessary because Systembolaget.se loads content asynchronously after the initial DOM is rendered.
@@ -163,10 +33,26 @@ const mutationObserver = new MutationObserver((entries, observer) => {
         // console.log(formattedAlcoholPercentage);
         // console.log(formattedPrice);
         const productDiv = product.querySelector("div.css-1n1rld4.e1ixmn8z0");
-        appendAPKToProduct(productDiv, apk);
+        const bool = appendAPKToProduct(productDiv, apk);
+        if (bool) {
+          chrome.storage.local.get(["autoSort"], function (result) {
+            if (result.autoSort && !isSortingNeeded) {
+              // Throttle the sort function to run only once every `sortDelay` milliseconds
+              const now = Date.now();
+              if (now - lastSortTime > sortDelay) {
+                isSortingNeeded = true;
+                lastSortTime = now;
+
+                sortProducts();
+
+                // Optionally, you could disconnect the observer here if necessary:
+                // observer.disconnect();
+              }
+            }
+          });
+        }
 
         // Disconnect the observer as all necessary information has been processed
-        // observer.disconnect();
       }
     });
   } else {
@@ -178,36 +64,66 @@ const mutationObserver = new MutationObserver((entries, observer) => {
 const body = document.getElementsByTagName("body")[0];
 mutationObserver.observe(body, { childList: true, subtree: true }); // The 'childList' option combined with 'subtree' observes all child elements and their descendants.
 
+// Function to sort the products
+function sortProducts() {
+  isSortingNeeded = false;
+  const gridElement = document.querySelector("div.css-1fgrh1r.e1ixmn8z0");
+  if (gridElement) {
+    // Remove the first div if it exists
+    const firstDiv = gridElement.querySelector("div.css-131707k.e1ixmn8z0");
+    if (firstDiv) {
+      firstDiv.remove();
+    }
+
+    // Collect all products into an array
+    const products = Array.from(gridElement.children);
+
+    // Log each product's APK value for debugging
+    // products.forEach((product) => {
+    //   console.log(
+    //     product.querySelector("div.apk-container").getAttribute("apk-value")
+    //   );
+    // });
+
+    // Sort products by APK value
+    products.sort((a, b) => {
+      const apkA = parseFloat(
+        a.querySelector("div.apk-container").getAttribute("apk-value")
+      );
+      const apkB = parseFloat(
+        b.querySelector("div.apk-container").getAttribute("apk-value")
+      );
+      return apkB - apkA;
+    });
+
+    // Clear the grid element and re-append sorted products
+    gridElement.innerHTML = "";
+    products.forEach((product) => gridElement.append(product));
+  } else {
+    console.log("Grid element not found.");
+  }
+}
+
+// Listener for messages from other parts of the extension
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "sortProducts") {
-    const gridElement = document.querySelector("div.css-1fgrh1r.e1ixmn8z0");
-    if (gridElement) {
-      const firstDiv = gridElement.querySelector("div.css-131707k.e1ixmn8z0");
-      console.log(firstDiv);
-      if (firstDiv) {
-        firstDiv.remove();
-      }
-      const products = Array.from(gridElement.children);
-      products.forEach((product) => {
-        console.log(
-          product.querySelector("div.apk-container").getAttribute("apk-value")
-        );
-      });
+    sortProducts();
+  }
+});
 
-      products.sort((a, b) => {
-        const apkA = parseFloat(
-          a.querySelector("div.apk-container").getAttribute("apk-value")
-        );
-        const apkB = parseFloat(
-          b.querySelector("div.apk-container").getAttribute("apk-value")
-        );
-        return apkB - apkA;
-      });
-      console.log(products);
-      gridElement.innerHTML = "";
-      products.forEach((product) => gridElement.append(product)); // Re-append sorted products
-    } else {
-      console.log("Grid element not found.");
+// Listener to monitor changes in chrome.storage
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === "local" && changes.autoSort) {
+    let newBooleanValue = changes.autoSort.newValue;
+
+    // If autoSort is true, automatically trigger the sort function
+    if (newBooleanValue) {
+      sortProducts();
     }
   }
+});
+
+// Listen for URL changes due to browser navigation (back/forward)
+window.addEventListener("popstate", function () {
+  console.log("URL changed (popstate):", window.location.href);
 });
