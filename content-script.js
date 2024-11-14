@@ -6,21 +6,19 @@ const sortDelay = 50;
  * This is necessary because Systembolaget.se loads content asynchronously after the initial DOM is rendered.
  */
 const mutationObserver = new MutationObserver((entries, observer) => {
-  const gridElement = document.querySelector("div.css-1fgrh1r.e1ixmn8z0");
+  const gridElement = document.querySelector("div.css-1fgrh1r");
   if (gridElement) {
     const products = gridElement.children;
 
     Array.from(products).forEach((product) => {
       const elements = product.querySelectorAll("p.css-e42h23.e1g7jmpl0");
       const [volume, alcoholPercentage] = [elements[1], elements[2]];
-      const price = product.querySelector("p.css-1k0oafj.eap2jzp0");
-
+      const price = product.querySelector("p.css-1k0oafj");
       const productDetails = formatProductDetails(
         volume,
         alcoholPercentage,
         price
       );
-
       if (productDetails) {
         const { formattedVolume, formattedAlcoholPercentage, formattedPrice } =
           productDetails;
@@ -32,8 +30,9 @@ const mutationObserver = new MutationObserver((entries, observer) => {
         // console.log(formattedVolume);
         // console.log(formattedAlcoholPercentage);
         // console.log(formattedPrice);
-        const productDiv = product.querySelector("div.css-1n1rld4.e1ixmn8z0");
+        const productDiv = product.querySelector("div.css-1n1rld4");
         const bool = appendAPKToProduct(productDiv, apk);
+        console.log(bool);
         if (bool) {
           chrome.storage.local.get(["autoSort"], function (result) {
             if (result.autoSort && !isSortingNeeded) {
@@ -59,7 +58,6 @@ const mutationObserver = new MutationObserver((entries, observer) => {
     console.log("Grid element not found.");
   }
 });
-
 // Start observing the body for child additions and subtree changes
 const body = document.getElementsByTagName("body")[0];
 mutationObserver.observe(body, { childList: true, subtree: true }); // The 'childList' option combined with 'subtree' observes all child elements and their descendants.
@@ -67,10 +65,11 @@ mutationObserver.observe(body, { childList: true, subtree: true }); // The 'chil
 // Function to sort the products
 function sortProducts() {
   isSortingNeeded = false;
-  const gridElement = document.querySelector("div.css-1fgrh1r.e1ixmn8z0");
+  const gridElement = document.querySelector("div.css-1fgrh1r");
+  console.log(gridElement);
   if (gridElement) {
     // Remove the first div if it exists
-    const firstDiv = gridElement.querySelector("div.css-131707k.e1ixmn8z0");
+    const firstDiv = gridElement.querySelector("div.css-131707k");
     if (firstDiv) {
       firstDiv.remove();
     }

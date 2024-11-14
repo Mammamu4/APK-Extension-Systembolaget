@@ -30,9 +30,9 @@ const mutationObserver = new MutationObserver((entries, observer) => {
       );
 
       // logging values for debugging
-      // console.log(formattedVolume);
-      // console.log(formattedAlcoholPercentage);
-      // console.log(formattedPrice);
+      console.log(formattedVolume);
+      console.log(formattedAlcoholPercentage);
+      console.log(formattedPrice);
 
       const appendElement = productDetails.querySelector(
         "div.css-j7qwjs.e1ixmn8z0"
