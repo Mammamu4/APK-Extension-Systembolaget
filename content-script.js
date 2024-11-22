@@ -12,11 +12,15 @@ const mutationObserver = new MutationObserver((entries, observer) => {
 
     Array.from(products).forEach((product) => {
       //const elements = product.querySelectorAll("div.css-1dtnjt5")[0].children; past method using css selector
-      const elements = product.querySelectorAll("div#stock_scrollcontainer")[0].children; // using the id instead, maybe better im no pro pls help ._.
-      console.log(elements);
+      const stockContainer = product.querySelectorAll("div#stock_scrollcontainer")[0]; // using the id instead, maybe better im no pro pls help ._.
+      if (!stockContainer) {
+        console.log("Error: No stock container found");
+        return
+      }
+      const elements = stockContainer.children;
+      
       const [volume, alcoholPercentage] = [elements[1], elements[2]];
       const price = product.querySelector("p.css-a2frwy");
-      console.log(price);
       const productDetails = formatProductDetails(
         volume,
         alcoholPercentage,
