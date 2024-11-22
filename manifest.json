@@ -13,6 +13,7 @@
   "action": {
     "default_popup": "popup.html"
   },
+
   "content_scripts": [
     {
       "js": ["content-script.js", "utils/formatProductDetails.js"],
@@ -23,6 +24,7 @@
       "matches": ["https://www.systembolaget.se/produkt*"]
     }
   ],
+  
   "permissions": ["activeTab", "scripting", "storage"],
   "background": {
     "service_worker": "background.js"
