@@ -11,9 +11,12 @@ const mutationObserver = new MutationObserver((entries, observer) => {
     const products = gridElement.children;
 
     Array.from(products).forEach((product) => {
-      const elements = product.querySelectorAll("p.css-e42h23.e1g7jmpl0");
+      //const elements = product.querySelectorAll("div.css-1dtnjt5")[0].children; past method using css selector
+      const elements = product.querySelectorAll("div#stock_scrollcontainer")[0].children; // using the id instead, maybe better im no pro pls help ._.
+      console.log(elements);
       const [volume, alcoholPercentage] = [elements[1], elements[2]];
-      const price = product.querySelector("p.css-1k0oafj");
+      const price = product.querySelector("p.css-a2frwy");
+      console.log(price);
       const productDetails = formatProductDetails(
         volume,
         alcoholPercentage,
