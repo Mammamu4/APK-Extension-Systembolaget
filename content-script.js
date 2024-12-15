@@ -11,9 +11,9 @@ const mutationObserver = new MutationObserver((entries, observer) => {
     const products = gridElement.children;
 
     Array.from(products).forEach((product) => {
-      const elements = product.querySelectorAll("p.css-e42h23.e1g7jmpl0");
+      const elements = product.querySelectorAll("p.e1g7jmpl0");
       const [volume, alcoholPercentage] = [elements[1], elements[2]];
-      const price = product.querySelector("p.css-1k0oafj");
+      const price = product.querySelector("p.css-a2frwy");
       const productDetails = formatProductDetails(
         volume,
         alcoholPercentage,
@@ -27,9 +27,6 @@ const mutationObserver = new MutationObserver((entries, observer) => {
           formattedAlcoholPercentage,
           formattedPrice
         );
-        // console.log(formattedVolume);
-        // console.log(formattedAlcoholPercentage);
-        // console.log(formattedPrice);
         const productDiv = product.querySelector("div.css-1n1rld4");
         const bool = appendAPKToProduct(productDiv, apk);
         console.log(bool);
