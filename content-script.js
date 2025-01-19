@@ -11,7 +11,8 @@ const mutationObserver = new MutationObserver((entries, observer) => {
     const products = gridElement.children;
 
     Array.from(products).forEach((product) => {
-      const elements = product.querySelectorAll("p.e1g7jmpl0");
+      const elements = product.querySelectorAll("p.e1fb4th00");
+      console.log(elements)
       const [volume, alcoholPercentage] = [elements[1], elements[2]];
       const price = product.querySelector("p.css-a2frwy");
       const productDetails = formatProductDetails(
