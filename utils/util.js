@@ -51,9 +51,9 @@ function formatProductDetails(volumeElement, alcoholElement, priceElement) {
 
 /**
  * Calculates the APK (Alcohol Per Krona(SEK)) based on volume, alcohol percentage, and price.
- * @param {number} volume - The volume of the product.
- * @param {number} alcoholPercentage - The alcohol percentage of the product.
- * @param {number} price - The price of the product.
+ * @param {number} volume - The volume of the product in ml.
+ * @param {number} alcoholPercentage - The alcohol percentage of the product in %.
+ * @param {number} price - The price of the product in SEK.
  * @returns {number} - The calculated APK value.
  */
 function calculateAPK(volume, alcoholPercentage, price) {
@@ -79,10 +79,11 @@ const appendAPKToProduct = (productDiv, apk) => {
 
   // If apkContainer doesn't exist, create a new one
   if (!apkContainer) {
+    console.log("Creating new apk container");
     apkContainer = document.createElement("div");
     apkContainer.className = "apk-container";
     productDiv.appendChild(apkContainer);
-  }
+  } else console.log("No APK container found!")
 
   // Update the APK display
   apkContainer.textContent = `APK: ${apk}`;

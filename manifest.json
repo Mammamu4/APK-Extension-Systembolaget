@@ -15,11 +15,11 @@
   },
   "content_scripts": [
     {
-      "js": ["content-script.js", "utils/formatProductDetails.js"],
-      "matches": ["https://www.systembolaget.se/sortiment*"]
+      "js": ["content-script.js", "utils/util.js"],
+      "matches": ["https://www.systembolaget.se/*"]
     },
     {
-      "js": ["product-script.js", "utils/formatProductDetails.js"],
+      "js": ["product-script.js", "utils/util.js"],
       "matches": ["https://www.systembolaget.se/produkt*"]
     }
   ],
